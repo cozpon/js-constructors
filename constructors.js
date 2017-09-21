@@ -69,55 +69,6 @@
    * @param  {number} damage  Amount of damage to deal to the spellcaster
    */
 
-
-
-function Spell(name, cost, description){
-  this.name = name;
-  this.cost = cost;
-  this.description = description;
-
-  Spell.prototype.getDetails = function(name, cost, description){
-    return this.name + "|" + this.cost + "|" + this.description;
-  };
-}
-
-function DamageSpell(name, cost, damage, description){
-  Spell.call(this, name, cost, description);
-  this.damage = damage;
-}
-DamageSpell.prototype = Object.create(Spell.prototype);
-DamageSpell.prototype.constructor = Spell;
-
-function Spellcaster(name, health, mana){
-  this.name = name;
-  this.health = health;
-  this.mana = mana;
-  this.isAlive = true;
-
-  this.inflictDamage = function(damage){
-    this.health -= damage;
-    if(this.health <= 0) {
-      this.isAlive = false;
-      this.health = 0;
-      }
-    };
-  this.spendMana = function(cost){
-
-    if(this.mana < cost){
-      return false;
-    } else {
-      this.mana =- cost;
-      return true;
-    }
-
-
-
-  };
-  this.invoke = function(){
-
-  };
-}
-
   /**
    * @method spendMana
    *
@@ -154,3 +105,68 @@ function Spellcaster(name, health, mana){
    * @param  {Spellcaster} target         The spell target to be inflicted.
    * @return {boolean}                    Whether the spell was successfully cast.
    */
+
+
+
+function Spell(name, cost, description){
+  this.name = name;
+  this.cost = cost;
+  this.description = description;
+
+  Spell.prototype.getDetails = function(name, cost, description){
+    return this.name + "|" + this.cost + "|" + this.description;
+  };
+}
+
+function DamageSpell(name, cost, damage, description){
+  Spell.call(this, name, cost, description);
+  this.damage = damage;
+}
+
+
+DamageSpell.prototype = Object.create(Spell.prototype, {
+  constructor : DamageSpell
+});
+
+
+function Spellcaster(name, health, mana){
+  this.name = name;
+  this.health = health;
+  this.mana = mana;
+  this.isAlive = true;
+
+  this.inflictDamage = function(damage){
+    this.health -= damage;
+    if(this.health <= 0) {
+      this.isAlive = false;
+      this.health = 0;
+      }
+    };
+
+  this.spendMana = function(cost){
+
+    if(this.mana < cost){
+      return false;
+    } else {
+      this.mana -= cost;
+      return true;
+    }
+  };
+
+  this.invoke = function(spell, target){
+    if (!(spell instanceof Spell)) return false;
+    if(spell.cost > this.mana) return false;
+
+    if(spell instanceof DamageSpell){
+      if(target && target instanceof Spellcaster){
+        target.inflictDamage(spell.damage);
+        return this.spendMana(spell.cost);
+      }
+      return false;
+    }
+    return this.spendMana(spell.cost);
+  };
+
+}
+
+
