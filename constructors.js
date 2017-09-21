@@ -10,24 +10,15 @@
  * @property {string} description
  * @method   getDetails
  */
-function Spell(name, cost, description){
-  this.name = name;
-  this.cost = cost;
-  this.description = description;
 
-  Spell.prototype.getDetails = function(name, cost, description){
-    return this.name + "|" + this.cost + "|" + this.description;
-  };
-}
-  /**
+ /**
    * Returns a string of all of the spell's details.
    * The format doesn't matter, as long as it contains the spell name, cost, and description.
    *
    * @name getDetails
    * @return {string} details containing all of the spells information.
    */
-
-/**
+   /**
  * A spell that deals damage.
  * We want to keep this code DRY (Don't Repeat Yourself).
  *
@@ -51,8 +42,7 @@ function Spell(name, cost, description){
  * @property {number} damage
  * @property {string} description
  */
-
-/**
+ /**
  * Now that you've created some spells, let's create
  * `Spellcaster` objects that can use them!
  *
@@ -68,8 +58,7 @@ function Spell(name, cost, description){
  * @method  spendMana
  * @method  invoke
  */
-
-  /**
+   /**
    * @method inflictDamage
    *
    * The spellcaster loses health equal to `damage`.
@@ -79,6 +68,55 @@ function Spell(name, cost, description){
    *
    * @param  {number} damage  Amount of damage to deal to the spellcaster
    */
+
+
+
+function Spell(name, cost, description){
+  this.name = name;
+  this.cost = cost;
+  this.description = description;
+
+  Spell.prototype.getDetails = function(name, cost, description){
+    return this.name + "|" + this.cost + "|" + this.description;
+  };
+}
+
+function DamageSpell(name, cost, damage, description){
+  Spell.call(this, name, cost, description);
+  this.damage = damage;
+}
+DamageSpell.prototype = Object.create(Spell.prototype);
+DamageSpell.prototype.constructor = Spell;
+
+function Spellcaster(name, health, mana){
+  this.name = name;
+  this.health = health;
+  this.mana = mana;
+  this.isAlive = true;
+
+  this.inflictDamage = function(damage){
+    this.health -= damage;
+    if(this.health <= 0) {
+      this.isAlive = false;
+      this.health = 0;
+      }
+    };
+  this.spendMana = function(cost){
+
+    if(this.mana < cost){
+      return false;
+    } else {
+      this.mana =- cost;
+      return true;
+    }
+
+
+
+  };
+  this.invoke = function(){
+
+  };
+}
 
   /**
    * @method spendMana
